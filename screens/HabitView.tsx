@@ -14,7 +14,7 @@ export default function HabitView(props: {route: any}) {
   const navigation = useNavigation();
 
   const {data: habits, status: habitsStatus} = useQuery("habits", fetchHabits)
-  const {title, description} = habits?.filter((item) => {
+  const {title, description, public: isPublic} = habits?.filter((item) => {
     return item.id == route.params.id;
   })[0];
 
@@ -30,6 +30,7 @@ export default function HabitView(props: {route: any}) {
         <Card.Title title={title} subtitle={description} 
         right={() => (
           <View style={{flexDirection: 'row'}}>
+            {!isPublic && <IconButton icon="eye-off" color="gray"/>}
             <IconButton icon="pencil" onPress={() => navigation.navigate("HabitEdit", {id: route.params.id})}/>
             <IconButton icon="close" onPress={navigation.goBack}/>
           </View>

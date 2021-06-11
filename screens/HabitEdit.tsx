@@ -32,11 +32,12 @@ export default function HabitEdit(props: {route: any}) {
 
   useEffect(() => {
     if (route.params.id) {
-      const { title, description } = habits?.filter(item => {
+      const { title, description, public: isPublic } = habits?.filter(item => {
         return item.id === route.params.id;
       })[0];
       setTitle(title);
       setDescription(description);
+      setIsPublic(isPublic);
     }
   }, []);
 
@@ -99,15 +100,16 @@ export default function HabitEdit(props: {route: any}) {
 
         <Button contentStyle={styles.fillButton} icon="content-save" 
         mode="contained" labelStyle={styles.buttonLabel} onPress={() => {
-          habitSetMutation.mutateAsync({id: route.params.id, title, description});
+          habitSetMutation.mutateAsync({id: route.params.id, title, description, public: isPublic});
           navigation.goBack();
         }}>Save</Button>
 
         <View style={{height: 8}}/>
 
         <Button contentStyle={styles.fillButton} icon="trash-can-outline" 
+        style={{display: route.params.id ? 'flex' : 'none'}}
         mode="outlined" labelStyle={[styles.buttonLabel, 
-          {color: 'red', display: route.params.id ? 'flex' : 'none'}]} 
+          {color: 'red'}]} 
           color={'red'}
         onPress={() => setHabitDeleteDialog(true)}>Delete</Button>
       </Card.Content>
