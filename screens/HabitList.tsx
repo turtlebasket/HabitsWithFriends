@@ -32,6 +32,7 @@ export default function HabitList() {
   return (
     <>
       { habitsStatus == "success" && <DraggableFlatList
+      contentContainerStyle={{paddingBottom: 10}}
       renderItem={renderItem}
       dragItemOverflow={false}
       data={habits as HabitCard[]}
