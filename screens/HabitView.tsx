@@ -75,7 +75,7 @@ export default function HabitView(props: {route: any}) {
         <Card.Content style={{alignItems: 'center'}}>
           <FlatList renderItem={renderDayItem} data={last5Days} horizontal={true} 
           contentContainerStyle={{justifyContent: 'space-between'}}
-          keyExtractor={({index}) => `day-item-${index}`}/>
+          keyExtractor={(item: string, index) => `day-item-${item}`}/>
         </Card.Content>
       </Card>
       <Card style={styles.card}>
