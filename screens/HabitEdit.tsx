@@ -56,8 +56,8 @@ export default function HabitEdit(props: {route: any}) {
           }}>Cancel</Button>
           <Button onPress={() => {
             setHabitDeleteDialog(false);
-            habitDelMutation.mutateAsync(route.params.id).then(() => {
-            });
+            habitDelMutation.mutateAsync(route.params.id);
+            navigation.navigate("HabitList");
           }}>OK</Button>
         </Dialog.Actions>
       </Dialog>
