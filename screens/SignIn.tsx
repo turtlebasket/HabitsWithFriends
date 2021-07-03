@@ -23,7 +23,9 @@ const SignIn = () => {
           else return <Button mode='outlined' onPress={() => setLoginMode('signup')} labelStyle={styles.buttonLabel}>Sign Up</Button>
         }}
         />
-        {isLogin() ? <LogInForm/> : <SignUpForm/>}
+        <Card.Content>
+          {isLogin() ? <LogInForm/> : <SignUpForm/>}
+        </Card.Content>
 
       </Card>
     </View>
