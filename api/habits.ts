@@ -9,7 +9,7 @@ export const fetchHabits = async () => {
     title,
     description,
     public,
-    history[0,1,2,3,4]
+    history5:history[0,1,2,3,4]
   `)
   .eq('user_id', userId());
   return data;
@@ -23,7 +23,7 @@ export const fetchHabit = async (id: string) => {
     title, 
     description, 
     public,
-    history[0,1,2,3,4]
+    history5:history[0,1,2,3,4]
   `).eq('id', id);
   // @ts-ignore
   return data[0];

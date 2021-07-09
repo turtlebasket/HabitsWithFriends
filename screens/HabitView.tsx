@@ -18,12 +18,12 @@ export default function HabitView(props: {route: any}) {
   const queryClient = useQueryClient();
 
   const {data: habits, status: habitsStatus} = useQuery("habits", fetchHabits)
-  const {title, description, public: isPublic, history} = habits?.filter((item) => {
+  const {title, description, public: isPublic, history5} = habits?.filter((item) => {
     return item.id == route.params.id;
   })[0];
   
   const [last5Days, setLast5Days] = useState<string[]>([]);
-  const [todayChecked, setTodayChecked] = useState<boolean>(history.includes(getISO8601()) ?? true);
+  const [todayChecked, setTodayChecked] = useState<boolean>(history5.includes(getISO8601()) ?? true);
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
 
@@ -44,7 +44,7 @@ export default function HabitView(props: {route: any}) {
   function updateSuccessRate() {
     let successesLast5Days = 0
     for (let item of last5Days) {
-      if (history.includes(item))  {
+      if (history5.includes(item))  {
         successesLast5Days += 1
       }
     }
@@ -89,7 +89,7 @@ export default function HabitView(props: {route: any}) {
 
   useEffect(() => {
     updateSuccessRate();
-  }, [history])
+  }, [history5])
 
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
     const isToday = item === getISO8601();
@@ -99,7 +99,7 @@ export default function HabitView(props: {route: any}) {
       <Text>{days[new Date(item).getDay()]}</Text>
       <Checkbox status={isToday 
         ? (todayChecked ? 'checked' : 'unchecked') 
-        : (history.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
+        : (history5.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
       disabled={!isToday}
       onPress={() => { setTodayChecked(!todayChecked) }}
       color={AppTheme.colors.primary}/>
