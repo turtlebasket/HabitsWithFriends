@@ -1,3 +1,4 @@
+import { getISO8601 } from "../util/dateUtil";
 import { supabase, userId } from "./supabase";
 
 export const fetchHabits = async () => {
@@ -42,6 +43,18 @@ export const setHabit = async (newData: any) => {
   .from('habits')
   .upsert(newData)
   if (error) console.log(error);
+}
+
+export const habitHistoryAdd = async (id: string) => {
+  const {data, error} = await supabase
+  .rpc('habit_history_add_simple', {habit_id: id})
+  if (error) console.log(error.message)
+  else console.log(data)
+}
+
+export const habitHistoryRemove = async (id: string) => {
+  await supabase
+  .rpc('habit_history_remove', {habit_id: id})
 }
 
 export const removeHabit = async (id: string) => {

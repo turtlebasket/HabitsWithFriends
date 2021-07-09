@@ -1,14 +1,15 @@
 import { useNavigation } from '@react-navigation/core';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import { Appbar, Button, Card, Checkbox, IconButton, ProgressBar, Subheading, Surface, Text, ToggleButton } from 'react-native-paper';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { fetchHabits, setHabit } from '../api/habits';
+import { fetchHabits, habitHistoryAdd, habitHistoryRemove, setHabit } from '../api/habits';
 import styles from '../style/styles';
 import { LineChart, ProgressCircle } from 'react-native-svg-charts';
 import { AppTheme } from '../style/themes';
 import { FlatList } from 'react-native-gesture-handler';
-import { dateToEpoch } from '../util/dateUtil';
+import { getISO8601 } from '../util/dateUtil';
+import { supabase } from '../api/supabase';
 
 export default function HabitView(props: {route: any}) {
 
@@ -21,45 +22,86 @@ export default function HabitView(props: {route: any}) {
     return item.id == route.params.id;
   })[0];
   
-  const [last5Days, setLast5Days] = useState<string[]>();
-  const [todayChecked, setTodayChecked] = useState<boolean>(history.includes(dateToEpoch()) ?? true);
-  
+  const [last5Days, setLast5Days] = useState<string[]>([]);
+  const [todayChecked, setTodayChecked] = useState<boolean>(history.includes(getISO8601()) ?? true);
+
+  const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
+
   const habitSetMutation = useMutation('habits', setHabit, {onSuccess: () => {
+    queryClient.invalidateQueries('habits');
+  }})
+
+  const historyAddMutation = useMutation('habits', habitHistoryAdd, {onSuccess: () => {
+    queryClient.invalidateQueries('habits');
+  }})
+
+  const historyRemoveMutation = useMutation('habits', habitHistoryRemove, {onSuccess: () => {
     queryClient.invalidateQueries('habits');
   }})
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  function updateSuccessRate() {
+    let successesLast5Days = 0
+    for (let item of last5Days) {
+      if (history.includes(item))  {
+        successesLast5Days += 1
+      }
+    }
+    console.log(`Updating success rate to ${successRateLast5Days}`)
+    setSuccessRateLast5Days(Math.round(successesLast5Days / 5 * 100 ) / 100);
+  }
+
   useEffect(() => {
 
     // horribly messy, fix later
-
     const today = new Date();
-    let l5d: number[] = [];
-    l5d.push(today.getDay());
-    l5d.push(new Date(today.setDate(today.getDate()-1)).getDay())
-    l5d.push(new Date(today.setDate(today.getDate()-1)).getDay())
-    l5d.push(new Date(today.setDate(today.getDate()-1)).getDay())
-    l5d.push(new Date(today.setDate(today.getDate()-1)).getDay())
-    let l5d_str: string[] = []
-    for (let i of l5d) l5d_str.push(days[i])
-    setLast5Days(l5d_str);
+    let l5d: string[] = [];
+    l5d.push(getISO8601(today));
+    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    setLast5Days(l5d);
+
   }, [])
 
+  // const mounted = useRef();
+  const isFirstRender = useRef(true)
   useEffect(() => {
-    if (todayChecked) habitSetMutation.mutateAsync({id: route.params.id, history})
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false // toggle flag after first render/mounting
+      return;
+    }
+
+    // check what kind of action on history should be performed
+    if (todayChecked) historyAddMutation.mutate(route.params.id);
+    else if (!todayChecked) historyRemoveMutation.mutate(route.params.id);
+
+
+    // recalculate success rate
   }, [todayChecked])
-  
+
+  useEffect(() => {
+    updateSuccessRate();
+  }, [last5Days])
+
+  useEffect(() => {
+    updateSuccessRate();
+  }, [history])
+
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
-    const isToday = item ===  days[new Date().getDay()]
+    const isToday = item === getISO8601();
+
     return (
     <View style={{flexDirection: 'column', paddingHorizontal: 8, paddingBottom: 4, alignItems: 'center'}}>
-      <Text>{item}</Text>
+      <Text>{days[new Date(item).getDay()]}</Text>
       <Checkbox status={isToday 
         ? (todayChecked ? 'checked' : 'unchecked') 
-        : (history.includes(dateToEpoch(item)) ? 'checked' : 'unchecked' ?? 'unchecked')} 
+        : (history.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
       disabled={!isToday}
-      onPress={() => {setTodayChecked(!todayChecked)}}
+      onPress={() => { setTodayChecked(!todayChecked) }}
       color={AppTheme.colors.primary}/>
     </View>
     )
@@ -91,8 +133,8 @@ export default function HabitView(props: {route: any}) {
         </Card.Content>
       </Card>
       <Card style={styles.card}>
-        <Card.Title title="70% success rate" subtitle="Last week" left={() => (
-          <ProgressCircle style={{height: 40}} strokeWidth={5} progress={0.7} 
+        <Card.Title title={`${successRateLast5Days * 100}% success rate`} subtitle="Last 5 days" left={() => (
+          <ProgressCircle style={{height: 40}} strokeWidth={5} progress={successRateLast5Days} 
           progressColor={AppTheme.colors.primary} 
           backgroundColor={AppTheme.colors.border}
           animate={true}/>
