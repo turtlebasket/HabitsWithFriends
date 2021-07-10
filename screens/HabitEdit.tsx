@@ -7,6 +7,7 @@ import { fetchHabits, removeHabit, setHabit } from '../api/habits';
 import styles from '../style/styles';
 import { AppTheme } from '../style/themes';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useRef } from 'react';
 
 export default function HabitEdit(props: {route: any}) {
 
@@ -88,7 +89,7 @@ export default function HabitEdit(props: {route: any}) {
         </>}
 
         <View style={{flexDirection: 'row', marginHorizontal: 2, height: 30, alignItems: 'center'}}>
-          <MaterialCommunityIcons name={isPublic ? "eye" : "eye-off"} size={20} />
+          <MaterialCommunityIcons name={isPublic ? "eye" : "eye-off"} size={20} color={AppTheme.colors.text} />
           <View style={{width: 5}} />
           <Subheading>{isPublic ? "Public" : "Private"}</Subheading>
           <View style={{marginLeft: 'auto'}}>
