@@ -39,9 +39,9 @@ const SignUpForm = () => {
   const navigation = useNavigation();
   return (
     <>
-      <TextInput label="Email" value={email} onChangeText={text => setEmail(text)} mode="outlined" style={styles.textBox}/>
-      <TextInput label="Password" value={pass} onChangeText={text => setPass(text)} mode="outlined" style={styles.textBox} secureTextEntry={true}/>
-      <TextInput label="Confirm Password" value={pass2} onChangeText={text => setPass2(text)} mode="outlined" style={styles.textBox } secureTextEntry={true}/>
+      <TextInput label="Email" value={email} onChangeText={text => setEmail(text)} mode="flat" style={styles.textBox}/>
+      <TextInput label="Password" value={pass} onChangeText={text => setPass(text)} mode="flat" style={styles.textBox} secureTextEntry={true}/>
+      <TextInput label="Confirm Password" value={pass2} onChangeText={text => setPass2(text)} mode="flat" style={styles.textBox } secureTextEntry={true}/>
       <Button mode="contained" icon="account" labelStyle={styles.buttonLabel} contentStyle={styles.fillButton} onPress={() => {
         if (pass != pass2) {
           Alert.alert("Error creating user!", "Passwords don't match");
@@ -67,8 +67,8 @@ const LogInForm = () => {
 
   return (
     <>
-      <TextInput label="Email" value={email} onChangeText={text => setEmail(text)} mode="outlined" style={styles.textBox}/>
-      <TextInput label="Password" value={pass} onChangeText={text => setPass(text)} mode="outlined" style={styles.textBox} secureTextEntry={true}/>
+      <TextInput label="Email" value={email} onChangeText={text => setEmail(text)} mode="flat" style={styles.textBox}/>
+      <TextInput label="Password" value={pass} onChangeText={text => setPass(text)} mode="flat" style={styles.textBox} secureTextEntry={true}/>
       <Button mode="contained" icon="login" labelStyle={styles.buttonLabel} contentStyle={styles.fillButton} onPress={() => {
         supabase.auth.signIn({email: email, password: pass}).then(({user, session, data}) => {
           supabase.from('user_data').select('id').eq('id', userId()).then(({data, error}) => {

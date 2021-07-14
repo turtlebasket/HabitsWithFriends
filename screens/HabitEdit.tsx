@@ -77,14 +77,14 @@ export default function HabitEdit(props: {route: any}) {
           value={title}
           onChangeText={value => setTitle(value)}
           style={styles.textBox}
-          mode="outlined"
+          mode="flat"
           />
           <TextInput
           label="Description"
           value={description}
           onChangeText={value => setDescription(value)}
           style={styles.textBox}
-          mode="outlined"
+          mode="flat"
           /> 
         </>}
 
@@ -108,8 +108,8 @@ export default function HabitEdit(props: {route: any}) {
         <View style={{height: 8}}/>
 
         <Button contentStyle={styles.fillButton} icon="trash-can-outline" 
-        style={{display: route.params.id ? 'flex' : 'none'}}
-        mode="outlined" labelStyle={[styles.buttonLabel, 
+        mode="outlined" style={{display: route.params.id ? 'flex' : 'none'}}
+        labelStyle={[styles.buttonLabel, 
           {color: 'red'}]} 
           color={'red'}
         onPress={() => setHabitDeleteDialog(true)}>Delete</Button>

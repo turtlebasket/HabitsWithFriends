@@ -46,11 +46,11 @@ export default function UserSetup(props: props) {
         <Card.Content>
           <TextInput label="Name" value={fullName} 
           onChangeText={text => setFullName(text)} 
-          mode="outlined" style={styles.textBox}
+          mode="flat" style={styles.textBox}
           />
           <TextInput label="Bio" value={description} 
           onChangeText={text => setDescription(text)} 
-          mode="outlined" style={styles.textBox}
+          mode="flat" style={styles.textBox}
           />
           <View style={{height: 10}}/>
           <Button mode="contained" icon="content-save" 
