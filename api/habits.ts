@@ -9,7 +9,7 @@ export const fetchHabits = async () => {
     title,
     description,
     public,
-    history5:history[0,1,2,3,4]
+    history7:history[0:6]
   `)
   .eq('user_id', userId());
   return data;
@@ -23,7 +23,7 @@ export const fetchHabit = async (id: string) => {
     title, 
     description, 
     public,
-    history5:history[0,1,2,3,4]
+    history7:history[0:6]
   `).eq('id', id);
   // @ts-ignore
   return data[0];
@@ -49,7 +49,6 @@ export const habitHistoryAdd = async (id: string) => {
   const {data, error} = await supabase
   .rpc('habit_history_add_simple', {habit_id: id})
   if (error) console.log(error.message)
-  else console.log(data)
 }
 
 export const habitHistoryRemove = async (id: string) => {

@@ -18,14 +18,15 @@ export default function HabitView(props: {route: any}) {
   const queryClient = useQueryClient();
 
   const {data: habits, status: habitsStatus} = useQuery("habits", fetchHabits)
-  const {title, description, public: isPublic, history5} = habits?.filter((item) => {
+  const {title, description, public: isPublic, history7} = habits?.filter((item) => {
     return item.id == route.params.id;
   })[0];
   
   const [last5Days, setLast5Days] = useState<string[]>([]);
-  const [todayChecked, setTodayChecked] = useState<boolean>(history5.includes(getISO8601()) ?? true);
+  const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(getISO8601()) ?? true);
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
+  const [successRateLast7Days, setSuccessRateLast7Days] = useState(0.0);
 
   const habitSetMutation = useMutation('habits', setHabit, {onSuccess: () => {
     queryClient.invalidateQueries('habits');
@@ -44,12 +45,11 @@ export default function HabitView(props: {route: any}) {
   function updateSuccessRate() {
     let successesLast5Days = 0
     for (let item of last5Days) {
-      if (history5.includes(item))  {
+      if (history7.includes(item))  {
         successesLast5Days += 1
       }
     }
-    console.log(`Updating success rate to ${successRateLast5Days}`)
-    setSuccessRateLast5Days(Math.round(successesLast5Days / 5 * 100 ) / 100);
+    setSuccessRateLast7Days(Math.round(successesLast5Days / 7 * 100 ) / 100);
   }
 
   useEffect(() => {
@@ -58,10 +58,10 @@ export default function HabitView(props: {route: any}) {
     const today = new Date();
     let l5d: string[] = [];
     l5d.push(getISO8601(today));
-    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
-    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
-    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
-    l5d.push(getISO8601(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
+    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
+    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
+    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
     setLast5Days(l5d);
 
   }, [])
@@ -89,17 +89,17 @@ export default function HabitView(props: {route: any}) {
 
   useEffect(() => {
     updateSuccessRate();
-  }, [history5])
+  }, [history7])
 
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
     const isToday = item === getISO8601();
 
     return (
     <View style={{flexDirection: 'column', paddingHorizontal: 8, paddingBottom: 4, alignItems: 'center'}}>
-      <Text>{days[new Date(item).getDay()]}</Text>
+      <Text>{days[new Date(item).getUTCDay()]}</Text>
       <Checkbox status={isToday 
         ? (todayChecked ? 'checked' : 'unchecked') 
-        : (history5.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
+        : (history7.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
       disabled={!isToday}
       onPress={() => { setTodayChecked(!todayChecked) }}
       color={AppTheme.colors.primary}/>
@@ -133,8 +133,8 @@ export default function HabitView(props: {route: any}) {
         </Card.Content>
       </Card>
       <Card style={styles.card}>
-        <Card.Title title={`${successRateLast5Days * 100}% success rate`} subtitle="Last 5 days" left={() => (
-          <ProgressCircle style={{height: 40}} strokeWidth={5} progress={successRateLast5Days} 
+        <Card.Title title={`${(successRateLast7Days * 100).toFixed()}% success rate`} subtitle="Past week" left={() => (
+          <ProgressCircle style={{height: 40}} strokeWidth={5} progress={successRateLast7Days} 
           progressColor={AppTheme.colors.primary} 
           backgroundColor={AppTheme.colors.border}
           animate={true}/>
