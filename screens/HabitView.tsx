@@ -45,7 +45,7 @@ export default function HabitView(props: {route: any}) {
   function updateSuccessRate() {
     let successesLast5Days = 0
     for (let item of last5Days) {
-      if (history7.includes(item))  {
+      if (history7.includes(item)) {
         successesLast5Days += 1
       }
     }
@@ -57,11 +57,12 @@ export default function HabitView(props: {route: any}) {
     // horribly messy, fix later
     const today = new Date();
     let l5d: string[] = [];
-    l5d.push(getISO8601(today));
-    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
-    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
-    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
-    l5d.push(getISO8601(new Date(today.setDate(today.getDate()-1))));
+    l5d.push(yyyymmdd(today));
+    l5d.push(yyyymmdd(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(yyyymmdd(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(yyyymmdd(new Date(today.setUTCDate(today.getUTCDate()-1))));
+    l5d.push(yyyymmdd(new Date(today.setUTCDate(today.getUTCDate()-1))));
+
     setLast5Days(l5d);
 
   }, [])
@@ -79,7 +80,6 @@ export default function HabitView(props: {route: any}) {
     if (todayChecked) historyAddMutation.mutate(route.params.id);
     else if (!todayChecked) historyRemoveMutation.mutate(route.params.id);
 
-
     // recalculate success rate
   }, [todayChecked])
 
@@ -89,10 +89,10 @@ export default function HabitView(props: {route: any}) {
 
   useEffect(() => {
     updateSuccessRate();
-  }, [history7])
+  }, [historyData]) // should fix auto-updating
 
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
-    const isToday = item === getISO8601();
+    const isToday = item === yyyymmdd();
 
     return (
     <View style={{flexDirection: 'column', paddingHorizontal: 8, paddingBottom: 4, alignItems: 'center'}}>
