@@ -19,7 +19,7 @@ export default function HabitList() {
     title: string,
     public: boolean
   }
-  
+
   const renderItem = ({item, index, drag, isActive}: RenderItemParams<HabitCard>) => {
 
     return (

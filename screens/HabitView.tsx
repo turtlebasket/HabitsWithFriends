@@ -3,13 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import { Appbar, Button, Card, Checkbox, IconButton, ProgressBar, Subheading, Surface, Text, ToggleButton } from 'react-native-paper';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { fetchHabits, habitHistoryAdd, habitHistoryRemove, setHabit } from '../api/habits';
+import { fetchHabits, fetchOwnHabitHistory7, habitHistoryAdd, habitHistoryRemove, setHabit } from '../api/habits';
 import styles from '../style/styles';
 import { LineChart, ProgressCircle } from 'react-native-svg-charts';
 import { AppTheme } from '../style/themes';
 import { FlatList } from 'react-native-gesture-handler';
-import { getISO8601 } from '../util/dateUtil';
-import { supabase } from '../api/supabase';
+import { getISO8601, yyyymmdd } from '../util/dateUtil';
 
 export default function HabitView(props: {route: any}) {
 
@@ -18,12 +17,23 @@ export default function HabitView(props: {route: any}) {
   const queryClient = useQueryClient();
 
   const {data: habits, status: habitsStatus} = useQuery("habits", fetchHabits)
-  const {title, description, public: isPublic, history7} = habits?.filter((item) => {
+  const {title, description, public: isPublic} = habits?.filter((item) => {
     return item.id == route.params.id;
   })[0];
-  
+
+  const { data: historyData } = useQuery("activity_habits_self", fetchOwnHabitHistory7);
+
+  const [history7, setHistory7] = useState<string[]>([]);
+  useEffect(() => {
+    // historyData?.forEach((item: any) => {if (item.habit_id == route.params.id) setHistory7(history7.concat(yyyymmdd(item.timestamp)))});
+    let history7Temp: string[] = [];
+    historyData?.forEach((item: any) => {if (item.habit_id == route.params.id) history7Temp.push(yyyymmdd(item.timestamp))});
+    setHistory7(history7Temp);
+    setTodayChecked(history7Temp.includes(yyyymmdd()));
+  }, [historyData]);
+
   const [last5Days, setLast5Days] = useState<string[]>([]);
-  const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(getISO8601()) ?? true);
+  const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(yyyymmdd()) ?? true);
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
   const [successRateLast7Days, setSuccessRateLast7Days] = useState(0.0);
@@ -32,12 +42,12 @@ export default function HabitView(props: {route: any}) {
     queryClient.invalidateQueries('habits');
   }})
 
-  const historyAddMutation = useMutation('habits', habitHistoryAdd, {onSuccess: () => {
-    queryClient.invalidateQueries('habits');
+  const historyAddMutation = useMutation('activity_habits_self', habitHistoryAdd, {onSuccess: () => {
+    queryClient.invalidateQueries('activity_habits_self');
   }})
 
-  const historyRemoveMutation = useMutation('habits', habitHistoryRemove, {onSuccess: () => {
-    queryClient.invalidateQueries('habits');
+  const historyRemoveMutation = useMutation('activity_habits_self', habitHistoryRemove, {onSuccess: () => {
+    queryClient.invalidateQueries('activity_habits_self');
   }})
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -74,7 +84,7 @@ export default function HabitView(props: {route: any}) {
 
     // check what kind of action on history should be performed
     if (todayChecked) historyAddMutation.mutate(route.params.id);
-    else if (!todayChecked) historyRemoveMutation.mutate(route.params.id);
+    else historyRemoveMutation.mutate(route.params.id);
 
     // recalculate success rate
   }, [todayChecked])
@@ -85,7 +95,7 @@ export default function HabitView(props: {route: any}) {
 
   useEffect(() => {
     updateSuccessRate();
-  }, [historyData]) // should fix auto-updating
+  }, [history7])
 
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
     const isToday = item === yyyymmdd();
