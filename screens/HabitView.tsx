@@ -67,14 +67,10 @@ export default function HabitView(props: {route: any}) {
 
   }, [])
 
-  // const mounted = useRef();
-  const isFirstRender = useRef(true)
+  const initCheck = useRef(false);
   useEffect(() => {
 
-    if (isFirstRender.current) {
-      isFirstRender.current = false // toggle flag after first render/mounting
-      return;
-    }
+    if (!initCheck.current) return;
 
     // check what kind of action on history should be performed
     if (todayChecked) historyAddMutation.mutate(route.params.id);
@@ -101,7 +97,10 @@ export default function HabitView(props: {route: any}) {
         ? (todayChecked ? 'checked' : 'unchecked') 
         : (history7.includes(item) ? 'checked' : 'unchecked' ?? 'unchecked')} 
       disabled={!isToday}
-      onPress={() => { setTodayChecked(!todayChecked) }}
+      onPress={() => { 
+        initCheck.current = true;
+        setTodayChecked(!todayChecked);
+      }}
       color={AppTheme.colors.primary}/>
     </View>
     )
