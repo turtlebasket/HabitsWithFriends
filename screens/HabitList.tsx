@@ -2,8 +2,8 @@ import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import { Appbar, Card, DefaultTheme, FAB, Searchbar, Text } from 'react-native-paper';
-import { useQuery } from 'react-query';
-import { fetchHabits, setHabits } from '../api/habits';
+import { useQuery, useQueryClient } from 'react-query';
+import { fetchHabits, fetchOwnHabitHistory7, setHabits } from '../api/habits';
 import styles from '../style/styles';
 import { AppDarkTheme, AppDefaultTheme, AppTheme } from '../style/themes';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,6 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 export default function HabitList() {
 
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
 
   const {data: habits, status: habitsStatus} = useQuery('habits', fetchHabits);
 
@@ -21,6 +22,8 @@ export default function HabitList() {
   }
 
   const renderItem = ({item, index, drag, isActive}: RenderItemParams<HabitCard>) => {
+
+    queryClient.prefetchQuery(`activity_habit_${item.id}_self`, () => fetchOwnHabitHistory7(item.id));
 
     return (
       <Card style={styles.card} onPress={() => {

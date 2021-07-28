@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useRef, useState } from 'react';
-import { BackHandler, View } from 'react-native';
-import { Appbar, Button, Card, Checkbox, IconButton, ProgressBar, Subheading, Surface, Text, ToggleButton } from 'react-native-paper';
+import { Alert, BackHandler, View } from 'react-native';
+import { Appbar, Button, Card, Checkbox, Dialog, IconButton, Portal, ProgressBar, Subheading, Surface, Text, ToggleButton } from 'react-native-paper';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { fetchHabits, fetchOwnHabitHistory7, habitHistoryAdd, habitHistoryRemove, setHabit } from '../api/habits';
+import { fetchHabits, fetchOwnHabitHistory7, fetchOwnHabitHistory7All, habitHistoryAdd, habitHistoryRemove, setHabit } from '../api/habits';
 import styles from '../style/styles';
 import { LineChart, ProgressCircle } from 'react-native-svg-charts';
 import { AppTheme } from '../style/themes';
@@ -21,7 +21,7 @@ export default function HabitView(props: {route: any}) {
     return item.id == route.params.id;
   })[0];
 
-  const { data: historyData } = useQuery("activity_habits_self", fetchOwnHabitHistory7);
+  const { data: historyData } = useQuery(`activity_habit_${route.params.id}_self`, () => fetchOwnHabitHistory7(route.params.id));
 
   const [history7, setHistory7] = useState<string[]>([]);
   useEffect(() => {
@@ -37,17 +37,14 @@ export default function HabitView(props: {route: any}) {
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
   const [successRateLast7Days, setSuccessRateLast7Days] = useState(0.0);
+  const [uncheckDialog, setUncheckDialog] = useState(false);
 
-  const habitSetMutation = useMutation('habits', setHabit, {onSuccess: () => {
-    queryClient.invalidateQueries('habits');
+  const historyAddMutation = useMutation(`activity_habit_${route.params.id}_self`, habitHistoryAdd, {onSuccess: () => {
+    queryClient.invalidateQueries(`activity_habit_${route.params.id}_self`);
   }})
 
-  const historyAddMutation = useMutation('activity_habits_self', habitHistoryAdd, {onSuccess: () => {
-    queryClient.invalidateQueries('activity_habits_self');
-  }})
-
-  const historyRemoveMutation = useMutation('activity_habits_self', habitHistoryRemove, {onSuccess: () => {
-    queryClient.invalidateQueries('activity_habits_self');
+  const historyRemoveMutation = useMutation(`activity_habit_${route.params.id}_self`, habitHistoryRemove, {onSuccess: () => {
+    queryClient.invalidateQueries(`activity_habit_${route.params.id}_self`);
   }})
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -109,7 +106,10 @@ export default function HabitView(props: {route: any}) {
       disabled={!isToday}
       onPress={() => { 
         initCheck.current = true;
-        setTodayChecked(!todayChecked);
+        if (!todayChecked) setTodayChecked(true);
+        else {
+          setUncheckDialog(true);
+        }
       }}
       color={AppTheme.colors.primary}/>
     </View>
@@ -118,6 +118,25 @@ export default function HabitView(props: {route: any}) {
 
   return (
     <>
+    <Portal>
+      <Dialog visible={uncheckDialog} dismissable={true}>
+        <Dialog.Title>Mark incomplete?</Dialog.Title>
+        <Dialog.Content>
+          <Text>You have marked this habit complete for today. This will undo that.</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => {
+            setUncheckDialog(false);
+          }}>Cancel</Button>
+          <Button onPress={() => {
+            if (todayChecked) {
+              setTodayChecked(false);
+            }
+            setUncheckDialog(false);
+          }}>OK</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
     { habitsStatus == "success" && <View>
       {/* <Appbar>
         <Appbar.BackAction onPress={navigation.goBack}/>

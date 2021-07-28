@@ -16,6 +16,19 @@ export function yyyymmdd(date?: Date | string) { // LOCAL, NOT UTC
   return todayStr;
 }
 
+export function yyyymmddUTC(date?: Date | string) { // LOCAL, NOT UTC
+  let today;
+  if (typeof date === 'object') today = date;
+  else if (typeof date === 'string') today = new Date(date)
+  else today = new Date();
+  var dd = String(today.getUTCDate()).padStart(2, '0');
+  var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = today.getUTCFullYear();
+
+  const todayStr: string = yyyy + '-' + mm + '-' + dd;
+  return todayStr;
+}
+
 export function getISO8601(dateIn?: Date | string) { // UTC, NOT LOCAL
   let date: string;
   if (typeof dateIn === 'object') date = dateIn.toISOString();

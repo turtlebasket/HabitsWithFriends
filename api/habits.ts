@@ -1,4 +1,4 @@
-import { getISO8601, yyyymmdd } from "../util/dateUtil";
+import { getISO8601, yyyymmdd, yyyymmddUTC } from "../util/dateUtil";
 import { supabase, userId } from "./supabase";
 
 export const fetchHabits = async () => {
@@ -43,20 +43,36 @@ export const setHabit = async (newData: any) => {
   if (error) console.log(error);
 }
 
-export const fetchOwnHabitHistory7 = async () => {
+export const fetchOwnHabitHistory7All = async () => {
   const {data, error} = await supabase
   .from('activity_habits')
   .select('habit_id, timestamp')
   .match({user_id: userId()})
+  .order('timestamp', {ascending: false})
+  // .limit(7) // FIGURE OUT A BETTERY WAY LATER, (IF NECESSARY)
   if (error) console.log(error.message);
   return data;
 }
 
-export const fetchOwnHabitHistory7One = async (id: string) => {
+// habithistory7 for ONE habit only
+export const fetchOwnHabitHistory7 = async (id: string) => { 
   const {data, error} = await supabase
   .from('activity_habits')
   .select('habit_id, timestamp')
   .match({user_id: userId(), habit_id: id})
+  .order('timestamp', {ascending: false})
+  .limit(7)
+  if (error) console.log(error.message);
+  return data;
+}
+
+export const fetchOwnHabitHistoryPaginate = async () => {
+  const {data, error} = await supabase
+  .from('activity_habits')
+  .select('user_id, habit_id, timestamp', {count: 'planned'})
+  .match({user_id: userId()})
+  .order('timestamp', {ascending: false})
+  .limit(5)
   if (error) console.log(error.message);
   return data;
 }
@@ -80,20 +96,27 @@ export const habitHistoryAdd = async (id: string) => {
 }
 
 export const habitHistoryRemove = async (id: string) => {
-  const todayTD = new Date()
-  const today = new Date(todayTD.setUTCDate(todayTD.getUTCDate())).toISOString()
-  const tomorrow = new Date(todayTD.setUTCDate(todayTD.getUTCDate()+1)).toISOString()
+  const dayMS = 86400000;
+  const todayTD = new Date();
+  const today = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)).getUTCDate())))).toISOString()
+  const tomorrow = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)+dayMS).getUTCDate())))).toISOString()
   const { data, error } = await supabase
-  .rpc('habit_history_remove', {h_id: id});
-  // .from('activity_habits')
-  // .delete()
-  // .eq('habit_id', id)
-  // .rangeGte('timestamp', today)
-  // .rangeLt('timestamp', tomorrow)
+  .from('activity_habits')
+  .delete()
+  .eq('habit_id', id)
+  .gte('timestamp', today)
+  .lte('timestamp', tomorrow)
   if (error) console.log(error.message)
+
+  // No longer necessary
+  // .rpc('habit_history_remove', {h_id: id});
 }
 
 export const removeHabit = async (id: string) => {
+  await supabase
+  .from('activity_habits')
+  .delete()
+  .match({habit_id: id})
   const { error } = await supabase
   .from('habits')
   .delete()
@@ -104,7 +127,7 @@ export const removeHabit = async (id: string) => {
 // Helper Functions
 
 /**
- * Timestamp range for last 5 days
+ * Timestamp range for last 7 days
  * @returns Timestamps for five days ago and tomorrow
  */
 const last7DaysRange = () => {
