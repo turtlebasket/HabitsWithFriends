@@ -95,10 +95,12 @@ export const habitHistoryAdd = async (id: string) => {
 }
 
 export const habitHistoryRemove = async (id: string) => {
-  const dayMS = 86400000;
   const todayTD = new Date();
-  const today = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)).getUTCDate())))).toISOString()
-  const tomorrow = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)+dayMS).getUTCDate())))).toISOString()
+  const tzOffset = todayTD.getTimezoneOffset();
+  const today = new Date(new Date().setUTCHours(tzOffset/60, 0, 0, 0)).toISOString();
+  const tomorrow = new Date(new Date().setUTCHours(tzOffset/60+24, 0, 0, 0)).toISOString();
+  console.log(`today:\t${today}`)
+  console.log(`tomorrow:\t${tomorrow}`)
   const { data, error } = await supabase
   .from('activity_habits')
   .delete()
@@ -108,6 +110,11 @@ export const habitHistoryRemove = async (id: string) => {
   if (error) console.log(error.message)
 
   // No longer necessary
+
+  // const dayMS = 86400000;
+  // const today = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)).getUTCDate())))).toISOString()
+  // const tomorrow = new Date(yyyymmddUTC(new Date(todayTD.setUTCDate(new Date(Number(todayTD)+dayMS).getUTCDate())))).toISOString()
+
   // .rpc('habit_history_remove', {h_id: id});
 }
 
