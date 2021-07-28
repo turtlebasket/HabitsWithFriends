@@ -88,8 +88,7 @@ export const habitHistoryAdd = async (id: string) => {
   .from('activity_habits')
   .insert({
     habit_id: id,
-    user_id: userId(),
-    timestamp: new Date().toISOString()
+    user_id: userId()
   })
   // .rpc('habit_history_add_simple', {habit_id: id})
   if (error) console.log(error.message)
@@ -122,20 +121,4 @@ export const removeHabit = async (id: string) => {
   .delete()
   .match({id: id})
   if (error) console.log(error.message);
-}
-
-// Helper Functions
-
-/**
- * Timestamp range for last 7 days
- * @returns Timestamps for five days ago and tomorrow
- */
-const last7DaysRange = () => {
-  const today = new Date(); // reference
-  let tomorrow = new Date(today.setUTCDate(today.getUTCDate()+1)); // upper cutoff timestamp
-  let fiveDaysAgo = new Date(today.setUTCDate(today.getUTCDate()-7)); // lower cutoff timestamp
-  tomorrow.setUTCHours(0); tomorrow.setUTCMinutes(0); tomorrow.setUTCSeconds(0); tomorrow.setUTCMilliseconds(0);
-  fiveDaysAgo.setUTCHours(0); fiveDaysAgo.setUTCMinutes(0); fiveDaysAgo.setUTCSeconds(0); fiveDaysAgo.setUTCMilliseconds(0);
-  console.log([fiveDaysAgo, tomorrow]);
-  return [fiveDaysAgo, tomorrow]
 }
