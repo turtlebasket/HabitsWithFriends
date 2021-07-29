@@ -180,7 +180,7 @@ export default function HabitView(props: {route: any}) {
       </Card>
       <Card style={styles.card}>
         <Card.Title title={`${(successRateLast7Days * 100).toFixed()}% success rate`} subtitle="Past week" left={() => (
-          <ProgressCircle style={{height: 40}} strokeWidth={5} progress={successRateLast7Days} 
+          <ProgressCircle style={{height: 40, paddingRight: 10}} strokeWidth={5} progress={successRateLast7Days} 
           progressColor={AppTheme.colors.primary} 
           backgroundColor={AppTheme.colors.border}
           animate={true}/>
