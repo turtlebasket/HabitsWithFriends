@@ -25,7 +25,6 @@ export default function HabitView(props: {route: any}) {
 
   const [history7, setHistory7] = useState<string[]>([]);
   useEffect(() => {
-    // historyData?.forEach((item: any) => {if (item.habit_id == route.params.id) setHistory7(history7.concat(yyyymmdd(item.timestamp)))});
     let history7Temp: string[] = [];
     historyData?.forEach((item: any) => {if (item.habit_id == route.params.id) history7Temp.push(yyyymmdd(item.timestamp))});
     setHistory7(history7Temp);
@@ -33,7 +32,12 @@ export default function HabitView(props: {route: any}) {
   }, [historyData]);
 
   const [last5Days, setLast5Days] = useState<string[]>([]);
+  const [lastWeek, setLastWeek] = useState<string[]>([]);
+  const [last5DaysUTC, setLast5DaysUTC] = useState<string[]>([]);
   const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(yyyymmdd()) ?? true);
+
+  // console.log(`historyData ${historyData}
+  //   lastWeek ${lastWeek}`);
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
   const [successRateLast7Days, setSuccessRateLast7Days] = useState(0.0);
@@ -52,13 +56,17 @@ export default function HabitView(props: {route: any}) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   function updateSuccessRate() {
-    let successesLast5Days = 0
-    for (let item of last5Days) {
-      if (history7.includes(item)) {
-        successesLast5Days += 1
-      }
+    let successesLast7Days = 0
+    for (let item of history7) {
+      if (item <= lastWeek[0] && item >= lastWeek[lastWeek.length-1])
+        successesLast7Days += 1 ;
     }
-    setSuccessRateLast7Days(Math.round(successesLast5Days / 7 * 100 ) / 100);
+    // for (let item of last5Days) {
+    //   if (history7.includes(item)) {
+    //     successesLast5Days += 1
+    //   }
+    // }
+    setSuccessRateLast7Days(Math.round(successesLast7Days / 7 * 100 ) / 100);
   }
 
   useEffect(() => {
@@ -73,6 +81,12 @@ export default function HabitView(props: {route: any}) {
     l5d.push(yyyymmdd(new Date(today.setUTCDate(today.getUTCDate()-1))));
 
     setLast5Days(l5d);
+
+    const today2 = new Date();
+    let week: string[] = [];
+    week.push(yyyymmdd(today2));
+    week.push(yyyymmdd(new Date(today2.setUTCDate(today.getUTCDate()-7))));
+    setLastWeek(week);
 
   }, [])
 
@@ -90,11 +104,7 @@ export default function HabitView(props: {route: any}) {
 
   useEffect(() => {
     updateSuccessRate();
-  }, [last5Days])
-
-  useEffect(() => {
-    updateSuccessRate();
-  }, [history7])
+  }, [last5Days, lastWeek, history7])
 
   const renderDayItem = ({item, index}: {item: string, index: number}) => {
     const isToday = item === yyyymmdd();
