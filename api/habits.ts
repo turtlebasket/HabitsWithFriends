@@ -48,7 +48,7 @@ export const fetchOwnHabitHistory7All = async () => {
   .from('activity_habits')
   .select('habit_id, timestamp')
   .match({user_id: userId()})
-  .order('timestamp', {ascending: false})
+  .order('timestamp, date', {ascending: false})
   // .limit(7) // FIGURE OUT A BETTERY WAY LATER, (IF NECESSARY)
   if (error) console.log(error.message);
   return data;
@@ -72,15 +72,15 @@ export const fetchOwnHabitHistoryPaginate = async () => {
   .select('user_id, habit_id, timestamp', {count: 'planned'})
   .match({user_id: userId()})
   .order('timestamp', {ascending: false})
-  .limit(5)
+  .limit(15)
   if (error) console.log(error.message);
   return data;
 }
 
-export const fetchAllHabitHistory = async () => {
+export const fetchAllHabitHistoryPaginate = async () => {
   const {data, error} = await supabase
   .from('activity_habits')
-  .select('timestamp') // FIX LATER - ALL HABIT ACTIVITY GETTER (IF USERID IN FRIENDS)
+  .select('user_id, habit_id, timestamp', {count: 'planned'}) // FIX LATER - ALL HABIT ACTIVITY GETTER (IF USERID IN FRIENDS)
 }
 
 export const habitHistoryAdd = async (id: string) => {

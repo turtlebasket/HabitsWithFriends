@@ -41,10 +41,12 @@ export default function HabitView(props: {route: any}) {
 
   const historyAddMutation = useMutation(`activity_habit_${route.params.id}_self`, habitHistoryAdd, {onSuccess: () => {
     queryClient.invalidateQueries(`activity_habit_${route.params.id}_self`);
+    queryClient.invalidateQueries('activity_you');
   }})
 
   const historyRemoveMutation = useMutation(`activity_habit_${route.params.id}_self`, habitHistoryRemove, {onSuccess: () => {
     queryClient.invalidateQueries(`activity_habit_${route.params.id}_self`);
+    queryClient.invalidateQueries('activity_you');
   }})
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

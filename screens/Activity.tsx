@@ -1,24 +1,20 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { StyleSheet, Text } from 'react-native';
 import { Avatar, Card, Title } from 'react-native-paper';
 import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 import styles from '../style/styles';
+import { ActivityAll } from './ActivityAll';
+import { ActivityYou } from './ActivityYou';
+import { AppTheme } from '../style/themes';
+
+const ActivityTab = createMaterialTopTabNavigator();
 
 export default function Activity() {
   return (
-    <Title>Activity!</Title>
-  );
-}
-
-const ActivityCard = (props: {
-  title: string,
-  timestamp: string,
-  pfpUri: string
-}) => {
-  const { title, timestamp } = props;
-  return (
-    <Card style={styles.card}>
-      <Card.Title title={title} left={()=>(<Avatar.Icon icon="account"/>)} />
-    </Card>
+    <ActivityTab.Navigator tabBarOptions ={{labelStyle: {fontWeight: 'bold'}}}>
+      <ActivityTab.Screen name="All" component={ActivityAll}/>
+      <ActivityTab.Screen name="You" component={ActivityYou}/>
+    </ActivityTab.Navigator>
   );
 }
