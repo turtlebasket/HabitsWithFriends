@@ -97,8 +97,8 @@ export const habitHistoryAdd = async (id: string) => {
 export const habitHistoryRemove = async (id: string) => {
   const todayTD = new Date();
   const tzOffset = todayTD.getTimezoneOffset();
-  const today = new Date(new Date().setUTCHours(tzOffset/60, 0, 0, 0)).toISOString();
-  const tomorrow = new Date(new Date().setUTCHours(tzOffset/60+24, 0, 0, 0)).toISOString();
+  const today = new Date(new Date().setUTCHours(tzOffset/60-24, 0, 0, 0)).toISOString();
+  const tomorrow = new Date(new Date().setUTCHours(tzOffset/60, 0, 0, 0)).toISOString();
   console.log(`today:\t${today}`)
   console.log(`tomorrow:\t${tomorrow}`)
   const { data, error } = await supabase
