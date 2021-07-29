@@ -110,8 +110,8 @@ export const habitHistoryRemove = async (id: string) => {
 
   // const today = new Date(new Date().setUTCHours(tzOffset/60, 0, 0, 0)).toISOString();
   // const tomorrow = new Date(new Date().setUTCHours(tzOffset/60+24, 0, 0, 0)).toISOString();
-  console.log(`today:\t${today}`)
-  console.log(`tomorrow:\t${tomorrow}`)
+  // console.log(`today:\t${today}`)
+  // console.log(`tomorrow:\t${tomorrow}`)
   const { data, error } = await supabase
   .from('activity_habits')
   .delete()
