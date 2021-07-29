@@ -88,7 +88,8 @@ export const habitHistoryAdd = async (id: string) => {
   .from('activity_habits')
   .insert({
     habit_id: id,
-    user_id: userId()
+    user_id: userId(),
+    date: yyyymmdd()
   })
   // .rpc('habit_history_add_simple', {habit_id: id})
   if (error) console.log(error.message)
