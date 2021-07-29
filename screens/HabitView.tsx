@@ -31,9 +31,9 @@ export default function HabitView(props: {route: any}) {
     setTodayChecked(history7Temp.includes(yyyymmdd()));
   }, [historyData]);
 
-  const [last5Days, setLast5Days] = useState<string[]>([]);
-  const [lastWeek, setLastWeek] = useState<string[]>([]);
-  const [last5DaysUTC, setLast5DaysUTC] = useState<string[]>([]);
+  const [last5Days, setLast5Days] = useState<string[]>([]); // [every item]
+  const [lastWeek, setLastWeek] = useState<string[]>([]); // [min & max]
+  const [lastMonth, setLastMonth] = useState<string[]>([]); // [min & max]
   const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(yyyymmdd()) ?? true);
 
   // console.log(`historyData ${historyData}
@@ -59,7 +59,7 @@ export default function HabitView(props: {route: any}) {
     let successesLast7Days = 0
     for (let item of history7) {
       if (item <= lastWeek[0] && item >= lastWeek[lastWeek.length-1])
-        successesLast7Days += 1 ;
+        successesLast7Days += 1;
     }
     // for (let item of last5Days) {
     //   if (history7.includes(item)) {
@@ -85,8 +85,14 @@ export default function HabitView(props: {route: any}) {
     const today2 = new Date();
     let week: string[] = [];
     week.push(yyyymmdd(today2));
-    week.push(yyyymmdd(new Date(today2.setUTCDate(today.getUTCDate()-7))));
+    week.push(yyyymmdd(new Date(today2.setUTCDate(today2.getUTCDate()-6))));
     setLastWeek(week);
+
+    const today3 = new Date();
+    let month: string[] = []; // approximate to 30 days
+    month.push(yyyymmdd(today3));
+    month.push(yyyymmdd(new Date(today3.setUTCDate(today3.getUTCDate()-29))));
+    setLastMonth(month)
 
   }, [])
 
