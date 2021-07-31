@@ -8,6 +8,7 @@ export const fetchUserData = async () => {
     dob,
     description
   `)
+  .match({id: userId()})
   // if (error) { console.log(error.message); return {}; }
   if (data == null) return null
   else return data[0];
