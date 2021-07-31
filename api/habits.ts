@@ -2,7 +2,7 @@ import { getISO8601, yyyymmdd, yyyymmddUTC } from "../util/dateUtil";
 import { supabase, userId } from "./supabase";
 
 export const fetchHabits = async () => {
-  const { data } = await supabase
+  const { data, error } = await supabase
   .from('habits')
   .select(`
     id,
@@ -11,6 +11,7 @@ export const fetchHabits = async () => {
     public
   `)
   .eq('user_id', userId());
+  if (error) console.log(error.message);
   return data;
 }
 
@@ -36,7 +37,6 @@ export const setHabits = async (newData: object) => {
 
 export const setHabit = async (newData: any) => {
   newData.user_id = userId();
-  console.log(newData);
   const { data, error } = await supabase
   .from('habits')
   .upsert(newData)
