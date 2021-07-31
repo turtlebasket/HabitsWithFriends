@@ -10,12 +10,7 @@ import ListItemSeparator from '../components/ListItemSeparator';
 
 export const ActivityYou = () => {
 
-  const queryClient = useQueryClient();
-
   const {data: historyCurr} = useQuery('activity_you', fetchOwnHabitHistoryPaginate)
-
-// queryClient.invalidateQueries('habits')
-  ;
 
   // history that's being displayed to user
   const [history, setHistory] = useState<object[]>([]);
@@ -34,8 +29,9 @@ export const ActivityYou = () => {
 
   return (
     <>
-    {/* <Button onPress={() => queryClient.invalidateQueries('activity_you')} mode={'outlined'}>Hi</Button> */}
-    <FlatList renderItem={renderItem} data={historyCurr} keyExtractor={(item, index) => `activity-item-${index}`} ItemSeparatorComponent={ListItemSeparator}/>
+    <FlatList renderItem={renderItem} data={historyCurr ?? []} keyExtractor={(item, index) => `activity-item-${index}`} ItemSeparatorComponent={ListItemSeparator}/>
+
+    {/* Maybe later */}
     {/* <RecyclerListView  rowRenderer={renderItem}/> */}
     </>
   );
