@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { Button, Card, Dialog, IconButton, Portal, Subheading, Switch, TextInput } from 'react-native-paper';
+import { ScrollView, View } from 'react-native';
+import { Appbar, Button, Card, Dialog, IconButton, Portal, Subheading, Switch, TextInput } from 'react-native-paper';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { fetchHabits, removeHabit, setHabit } from '../api/habits';
 import styles from '../style/styles';
@@ -63,12 +63,17 @@ export default function HabitEdit(props: {route: any}) {
         </Dialog.Actions>
       </Dialog>
     </Portal>
+    <Appbar>
+      <Appbar.BackAction onPress={navigation.goBack}/>
+      <Appbar.Content title="Edit"/>
+    </Appbar>
+    <ScrollView>
       <Card style={styles.card}>
-        <Card.Title title={route.params.id ? "Edit habit" : "New habit"} right={() => (
+        {/* <Card.Title title={route.params.id ? "Edit habit" : "New habit"} right={() => (
           <View style={{flexDirection: 'row'}}>
             <IconButton icon="close" onPress={navigation.goBack}/>
           </View>
-        )} rightStyle={{marginRight: 10}}/>
+        )} rightStyle={{marginRight: 10}}/> */}
         <Card.Content>
         { habitsStatus == 'success' &&
         <>
@@ -115,6 +120,7 @@ export default function HabitEdit(props: {route: any}) {
         onPress={() => setHabitDeleteDialog(true)}>Delete</Button>
       </Card.Content>
       </Card>
+      </ScrollView>
     </>
   );
 }

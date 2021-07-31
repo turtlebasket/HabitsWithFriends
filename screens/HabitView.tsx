@@ -7,7 +7,7 @@ import { fetchHabits, fetchOwnHabitHistory7, fetchOwnHabitHistory7All, habitHist
 import styles from '../style/styles';
 import { LineChart, ProgressCircle } from 'react-native-svg-charts';
 import { AppTheme } from '../style/themes';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { getISO8601, yyyymmdd } from '../util/dateUtil';
 
 export default function HabitView(props: {route: any}) {
@@ -35,9 +35,6 @@ export default function HabitView(props: {route: any}) {
   const [lastWeek, setLastWeek] = useState<string[]>([]); // [min & max]
   const [lastMonth, setLastMonth] = useState<string[]>([]); // [min & max]
   const [todayChecked, setTodayChecked] = useState<boolean>(history7.includes(yyyymmdd()) ?? true);
-
-  // console.log(`historyData ${historyData}
-  //   lastWeek ${lastWeek}`);
 
   const [successRateLast5Days, setSuccessRateLast5Days] = useState(0.0);
   const [successRateLast7Days, setSuccessRateLast7Days] = useState(0.0);
@@ -155,13 +152,13 @@ export default function HabitView(props: {route: any}) {
         </Dialog.Actions>
       </Dialog>
     </Portal>
-    { habitsStatus == "success" && <View>
-      {/* <Appbar>
+    { habitsStatus == "success" && <>
+      <Appbar>
         <Appbar.BackAction onPress={navigation.goBack}/>
-        <Appbar.Content title={title} subtitle={description}/>
+        <Appbar.Content title={title}/>
         <Appbar.Action icon="pencil" onPress={() => navigation.navigate("HabitEdit", {id: route.params.id})}/>
-      </Appbar> */}
-      <Card style={styles.card}>
+      </Appbar>
+      {/* <Card style={styles.card}>
         <Card.Title title={title} subtitle={description} 
         right={() => (
           <View style={{flexDirection: 'row'}}>
@@ -170,23 +167,34 @@ export default function HabitView(props: {route: any}) {
             <IconButton icon="close" onPress={navigation.goBack}/>
           </View>
         )}/>
-      </Card>
-      <Card style={styles.card}>
-        <Card.Content style={{alignItems: 'center'}}>
-          <FlatList renderItem={renderDayItem} data={last5Days} horizontal={true} 
-          contentContainerStyle={{justifyContent: 'space-between'}}
-          keyExtractor={(item: string, index) => `day-item-${index}`}/>
+      </Card> */}
+      <ScrollView>
+      <Card style={[styles.card, {display: description ? 'flex' : 'none'}]}>
+        {/* <Card.Title title="Description"/> */}
+        <Card.Content>
+          <Text>{description}</Text>
         </Card.Content>
       </Card>
       <Card style={styles.card}>
-        <Card.Title title={`${(successRateLast7Days * 100).toFixed()}% success rate`} subtitle="Past week" left={() => (
+        <Card.Title title="Progress"/>
+        <Card.Content>
+          <View style={{alignItems: 'center'}}>
+            <FlatList renderItem={renderDayItem} data={last5Days} horizontal={true} 
+            // contentContainerStyle={{justifyContent: 'space-between', flexGrow: 1}}
+            keyExtractor={(item: string, index) => `day-item-${index}`}/>
+          </View>
+        </Card.Content>
+      </Card>
+      <Card style={styles.card}>
+        <Card.Title title={`${(successRateLast7Days * 100).toFixed()}% Completion`} subtitle="Past week" left={() => (
           <ProgressCircle style={{height: 34}} strokeWidth={5} progress={successRateLast7Days} 
           progressColor={AppTheme.colors.primary} 
           backgroundColor={AppTheme.colors.border}
           animate={true}/>
         )}/>
       </Card>
-    </View> }
+      </ScrollView>
+    </> }
     </>
   );
 }
