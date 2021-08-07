@@ -6,6 +6,8 @@ import { useQuery } from 'react-query';
 import { fetchHabits, setHabit } from '../api/habits';
 import { supabase, userId } from '../api/supabase';
 import { fetchUserData } from '../api/userData';
+import { AppTheme } from '../style/themes';
+import { timeSince } from '../util/dateUtil';
 
 type props = {
   user_id: string,
@@ -40,7 +42,7 @@ export default function ActivityCard(props: props) {
 
   return (
     <View style={{flex: 1, flexDirection: 'row', padding: 20}}>
-      <Text><Text style={{fontWeight: isOwn ? 'normal' : 'bold'}}>{userName}</Text> completed habit <Text style={{fontWeight: 'bold'}}>{habitName}</Text>.</Text>
+      <Text><Text style={{fontWeight: isOwn ? 'normal' : 'bold'}}>{userName}</Text> completed habit <Text style={{fontWeight: 'bold'}}>{habitName}</Text>. <Text style={{color: AppTheme.colors.disabled}}>{timeSince(timestamp)}</Text></Text>
     </View>
   )
 }

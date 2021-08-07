@@ -15,6 +15,7 @@ export default function HabitEdit(props: {route: any}) {
   const navigation = useNavigation();
   const { route } = props;
 
+  const [isNew, setIsNew] = useState<boolean>(true);
   const [edited, setEdited] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,6 +35,7 @@ export default function HabitEdit(props: {route: any}) {
   useEffect(() => {
     if (route.params.id) {
       const { title, description, public: isPublic } = habits?.filter(item => {
+        if (item.id === route.params.id) setIsNew(false);
         return item.id === route.params.id;
       })[0];
       setTitle(title);
@@ -65,7 +67,7 @@ export default function HabitEdit(props: {route: any}) {
     </Portal>
     <Appbar>
       <Appbar.BackAction onPress={navigation.goBack}/>
-      <Appbar.Content title="Edit"/>
+      <Appbar.Content title={isNew ? "Create Habit" : "Edit Habit"}/>
     </Appbar>
     <ScrollView>
       <Card style={styles.card}>
@@ -90,6 +92,7 @@ export default function HabitEdit(props: {route: any}) {
           onChangeText={value => setDescription(value)}
           style={styles.textBox}
           mode="flat"
+          multiline={true}
           /> 
         </>}
 

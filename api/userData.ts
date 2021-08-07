@@ -4,9 +4,11 @@ export const fetchUserData = async () => {
   const {data, error} = await supabase.from('user_data')
   .select(`
     id,
+    handle,
     full_name,
+    description,
     dob,
-    description
+    friends
   `)
   .match({id: userId()})
   // if (error) { console.log(error.message); return {}; }

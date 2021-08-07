@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
-import { Appbar, Card, DefaultTheme, FAB, Searchbar, Text } from 'react-native-paper';
+import { ActivityIndicator, Appbar, Card, DefaultTheme, FAB, Searchbar, Text } from 'react-native-paper';
 import { useQuery, useQueryClient } from 'react-query';
 import { fetchHabits, fetchOwnHabitHistory7, setHabits } from '../api/habits';
 import styles from '../style/styles';
@@ -39,13 +39,13 @@ export default function HabitList() {
 
   return (
     <>
-      { habitsStatus == "success" && <DraggableFlatList
+      { habitsStatus == "success" ? <DraggableFlatList
       contentContainerStyle={{paddingBottom: 10}}
       renderItem={renderItem}
       dragItemOverflow={false}
-      data={habits as HabitCard[]}
+      data={habits as HabitCard[] ?? []}
       keyExtractor={(item: any, index) => `draggable-item-${item.id}`}
-      /> }
+      /> : <ActivityIndicator animating={true} size={'small'} style={{marginVertical: 'auto', flexGrow: 1}}/> }
       <FAB style={[styles.fab, {backgroundColor: AppTheme.colors.primary}]} icon="plus" onPress={() => navigation.navigate("HabitEdit", {id: undefined})}/>
     </>
   )

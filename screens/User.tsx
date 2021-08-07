@@ -4,8 +4,10 @@ import React from 'react';
 import { Alert, View } from 'react-native';
 import { Avatar, Button, Card, IconButton, Surface, Text } from 'react-native-paper';
 import { useMutation, useQuery } from 'react-query';
+import { fetchHabits } from '../api/habits';
 import { fetchUserData, setUserData } from '../api/userData';
 import styles from '../style/styles';
+import Friends from './Friends';
 import Settings from './Settings';
 import UserSetup from './UserSetup';
 
@@ -20,6 +22,7 @@ export default function User() {
       <Stack.Screen name="ProfileView" component={ProfileView}/>
       <Stack.Screen name="ProfileEdit" component={UserSetupUserspace}/>
       <Stack.Screen name="Settings" component={Settings}/>
+      <Stack.Screen name="Friends" component={Friends}/>
     </Stack.Navigator>
   );
 }
@@ -28,9 +31,10 @@ const ProfileView = () => {
 
   const navigation = useNavigation();
 
-  const { data: userData } = useQuery('userData', fetchUserData)
+  const { data: userData } = useQuery('userData', fetchUserData);
+  const { data: habitData } = useQuery('habits', fetchHabits);
   if (userData == null) navigation.navigate("ProfileEdit")
-  const {full_name, description} = userData;
+  const {full_name, description, friends} = userData;
 
   // options
   const avatarSize=80
@@ -53,6 +57,18 @@ const ProfileView = () => {
           </View>
         )}
         />
+      </Card>
+
+      <Card style={styles.card}>
+        <Card.Title title={`Friends (${friends.length})`}
+        left={() => <IconButton icon="account-multiple"/>}
+        right={() => <IconButton icon="arrow-right"/>}/>
+      </Card>
+      
+      <Card style={styles.card} onPress={() => navigation.navigate("Habits")}>
+        <Card.Title title={`Habits (${habitData?.length})`} 
+        left={() => <IconButton icon="text-box-check"/>}
+        right={() => <IconButton icon="arrow-right"/>}/>
       </Card>
     </>
   )

@@ -6,9 +6,10 @@ export const AppDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme)
 export const AppDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme)
 
 export const AppTheme = {
-  ...AppDefaultTheme,
+  // ...AppDefaultTheme,
+  ...AppDarkTheme,
   dark: true,
   colors: {
-    ...AppDefaultTheme.colors,
+    ...AppDarkTheme.colors,
   }
 }

@@ -1,12 +1,25 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { Button, Card, Text, TextInput, ToggleButton } from 'react-native-paper';
+import { useQueryClient } from 'react-query';
 import { supabase, userId } from '../api/supabase';
 import { handleEmailLogin, handleEmailSignup } from '../auth/auth';
 import styles from '../style/styles';
+import { isDefined } from '../util/varUtil';
 
 const SignIn = () => {
+
+  const navigation = useNavigation();
+  const queryClient = useQueryClient();
+  
+  // WHY IS SESSION NULL BUT THEN GETS INITIALIZED SOON AFTER
+  console.log(`SESSION ${supabase.auth.session()}`)
+
+  if (isDefined(supabase.auth.session())) {
+    navigation.navigate("HomeSpace");
+  }
 
   const [loginMode, setLoginMode] = useState('login'); // default = login, else = signup
 
