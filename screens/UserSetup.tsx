@@ -25,7 +25,7 @@ export default function UserSetup(props: props) {
   const [dob, setDob] = useState("");
   
   const [handleIsTaken, setHandleIsTaken] = useState<boolean>(false);
-  const [lettersNumbersOnly, setLettersNumbersOnly] = useState<boolean>(false);
+  const [lettersNumbersOnly, setLettersNumbersOnly] = useState<boolean>(true);
 
   const { data: userData , error } = useQuery('userData', fetchUserData);
   const userDataMutation = useMutation('userData', setUserData, {onSuccess: data => {

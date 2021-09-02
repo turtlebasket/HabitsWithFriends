@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { AppTheme } from "./themes";
 
 const styles = StyleSheet.create({
   pageText: {
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
   },
 
   fab: {
+    backgroundColor: AppTheme.colors.primary,
     position: "absolute",
     margin: 16,
     right: 0,

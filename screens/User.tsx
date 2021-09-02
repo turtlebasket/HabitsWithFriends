@@ -7,6 +7,7 @@ import { useMutation, useQuery } from 'react-query';
 import { fetchHabits } from '../api/habits';
 import { fetchUserData, setUserData } from '../api/userData';
 import styles from '../style/styles';
+import FindFriends from './FindFriends';
 import Friends from './Friends';
 import Settings from './Settings';
 import UserSetup from './UserSetup';
@@ -23,6 +24,7 @@ export default function User() {
       <Stack.Screen name="ProfileEdit" component={UserSetupUserspace}/>
       <Stack.Screen name="Settings" component={Settings}/>
       <Stack.Screen name="Friends" component={Friends}/>
+      <Stack.Screen name="FindFriends" component={FindFriends}/>
     </Stack.Navigator>
   );
 }
@@ -59,7 +61,7 @@ const ProfileView = () => {
         />
       </Card>
 
-      <Card style={styles.card}>
+      <Card style={styles.card} onPress={() => navigation.navigate("Friends")}>
         <Card.Title title={`Friends (${friends.length})`}
         left={() => <IconButton icon="account-multiple"/>}
         right={() => <IconButton icon="arrow-right"/>}/>
